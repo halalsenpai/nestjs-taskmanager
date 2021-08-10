@@ -5,9 +5,19 @@ import { UsersModule } from './users/users.module';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'localhost',
+      port: 5432,
+      username: 'halalsenpai',
+      password: '959804',
+      database: 'taskmanagement',
+      synchronize: true,
+    }),
     TasksModule,
     AuthModule,
     UsersModule,

@@ -1,9 +1,6 @@
-
 import { ApiProperty } from '@nestjs/swagger';
 
 export class Task {
-
-
   @ApiProperty({ example: 'task 1', description: 'The title of the task' })
   title: string;
 
@@ -11,7 +8,5 @@ export class Task {
     example: 'This is a test description',
     description: 'The description of the task',
   })
-  description: string
-
- 
+  description: string;
 }
