@@ -7,13 +7,9 @@ import {
   Patch,
   Post,
   Query,
-  Request,
-  Req,
-  Response,
-  UseGuards,
   ValidationPipe,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { Task, TaskStatus } from './task.model';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { getTasksFilterDTO } from './dto/get-tasks-filter.dto';
@@ -27,6 +23,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import * as csurf from 'csurf';
+import { Task } from './entities/task.entity';
+import { TaskStatus } from './task-status.enum';
 
 var csrfProtection = csurf({ cookie: true });
 
@@ -37,40 +35,41 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getAllTasks(
-    @Request() req,
-    @Query(ValidationPipe) filterDTO: getTasksFilterDTO,
-  ): any {
-    if (Object.keys(filterDTO).length) {
-      return this.tasksService.getTasksWithFilters(filterDTO);
-    } else {
-      return { taks: this.tasksService.getAllTasks(), token: req.csrfToken() };
-    }
+  getAllTasks(@Query(ValidationPipe) filterDTO: getTasksFilterDTO) {
+    return this.tasksService.getAllTasks(filterDTO);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
   @ApiOperation({ summary: 'Create a task' })
   @ApiBody({ type: CreateTaskDto })
-  createTask(@Request() req, @Body() createTaskDto: CreateTaskDto): Task[] {
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.tasksService.createTask(createTaskDto);
   }
 
   @Get('/:id')
-  getTaskById(@Req() req, @Param('id') id: string): Task {
+  getTaskById(@Param('id', ParseIntPipe) id: number): Promise<Task> {
     return this.tasksService.getTaskById(id);
   }
 
   @Delete('/:id')
-  deleteTaskById(@Param('id') id: string): Task[] {
+  deleteTaskById(@Param('id') id: number): Promise<void> {
     return this.tasksService.deleteTaskById(id);
   }
 
   @Patch('/status/:id')
   updateTaskStatus(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body('status', TaskStatusValidationPipe) status: TaskStatus,
-  ): Task[] {
+  ): Promise<Task> {
     return this.tasksService.updateTaskStatus(id, status);
   }
+
+  // @Patch('/status/:id')
+  // updateTaskStatus(
+  //   @Param('id') id: string,
+  //   @Body('status', TaskStatusValidationPipe) status: TaskStatus,
+  // ): Task[] {
+  //   return this.tasksService.updateTaskStatus(id, status);
+  // }
 }
