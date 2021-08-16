@@ -10,7 +10,14 @@ export class AuthService {
     private UserRepository: UserRepository,
   ) {}
 
-  signUp(authCredentialsDto: AuthCredentialsDto) {
-    this.UserRepository.signUp(authCredentialsDto);
+  async signUp(authCredentialsDto: AuthCredentialsDto) {
+    return this.UserRepository.signUp(authCredentialsDto);
+  }
+
+  async login(authCredentialsDto: AuthCredentialsDto) {
+    const result = await this.UserRepository.validateUserPassword(
+      authCredentialsDto,
+    );
+    return result;
   }
 }
