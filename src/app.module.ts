@@ -3,6 +3,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { GoogleStrategy } from './auth/google.strategy';
 
 @Module({
   imports: [
@@ -10,7 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'postgres',
+      username: 'halalsenpai',
       password: '959804',
       database: 'taskmanagement',
       synchronize: true,
@@ -23,6 +24,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       limit: 10,
     }),
   ],
-  providers: [],
+  providers: [GoogleStrategy],
 })
 export class AppModule {}

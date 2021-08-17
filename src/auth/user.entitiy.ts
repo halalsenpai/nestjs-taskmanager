@@ -8,19 +8,22 @@ import {
 import * as bcrypt from 'bcrypt';
 
 @Entity()
-@Unique(['username'])
+@Unique(['email'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  username: string;
+  email: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   salt: string;
+
+  @Column()
+  madeWithGoogle: boolean;
 
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);

@@ -13,7 +13,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   controllers: [AuthController],
   imports: [
-    TypeOrmModule.forFeature([UserRepository]),],
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+    JwtModule.register({
+      secret: 'thisismysecret',
+      signOptions: {
+        expiresIn: '2d',
+      },
+    }),
+    TypeOrmModule.forFeature([UserRepository]),
+  ],
   providers: [AuthService],
   exports: [AuthService],
 })

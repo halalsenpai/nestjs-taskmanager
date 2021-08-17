@@ -4,24 +4,26 @@ import { User } from './user.entitiy';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import {
   ConflictException,
+  HttpException,
   InternalServerErrorException,
 } from '@nestjs/common';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
   async signUp(authCredentialsDto: AuthCredentialsDto) {
-    const { username, password } = authCredentialsDto;
+    const { email, password } = authCredentialsDto;
 
     const user = new User();
-    user.username = username;
+    user.email = email;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(password, user.salt);
+    user.madeWithGoogle = false;
 
     try {
       await user.save();
     } catch (error) {
       if (error.code === '23505') {
-        throw new ConflictException('Username already exists');
+        throw new ConflictException('email already exists');
       } else {
         throw new InternalServerErrorException();
       }
@@ -33,14 +35,29 @@ export class UserRepository extends Repository<User> {
   async validateUserPassword(
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<string> {
-    const { username, password } = authCredentialsDto;
+    const { email, password } = authCredentialsDto;
 
-    const user = await this.findOne({ username });
+    const user = await this.findOne({ email });
+
+    console.log('user found', user);
 
     if (user && (await user.validatePassword(password))) {
-      return user.username;
+      return user.email;
     } else {
-      return 'password does not match';
+      return null;
+    }
+  }
+  async signUpWithGoogle(email: string, madeWithGoogle: boolean) {
+    const user = new User();
+    user.email = email;
+    user.madeWithGoogle = madeWithGoogle;
+    user.password = null;
+    user.salt = null;
+
+    try {
+      await user.save();
+    } catch (error) {
+      return error;
     }
   }
 }
