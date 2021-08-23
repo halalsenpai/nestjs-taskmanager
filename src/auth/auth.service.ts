@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getRepository } from 'typeorm';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
 
@@ -56,4 +55,5 @@ export class AuthService {
   async createWithGoogle(email: string, madeWithGoogle: boolean) {
     return await this.UserRepository.signUpWithGoogle(email, madeWithGoogle);
   }
+  
 }

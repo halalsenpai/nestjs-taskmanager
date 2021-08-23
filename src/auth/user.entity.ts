@@ -22,8 +22,11 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   salt: string;
 
-  @Column()
+  @Column({ default: false })
   madeWithGoogle: boolean;
+
+  @Column({ default: false })
+  isVerified: boolean;
 
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);

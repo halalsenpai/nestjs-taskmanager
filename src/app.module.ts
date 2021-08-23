@@ -1,9 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TasksModule } from './tasks/tasks.module';
 import { AuthModule } from './auth/auth.module';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GoogleStrategy } from './auth/google.strategy';
+import { EmailModule } from './email/email.module';
+import { ConfirmEmailService } from './confirm-email/confirm-email.service';
+import { ConfirmEmailController } from './confirm-email/confirm-email.controller';
+import { ConfirmEmailModule } from './confirm-email/confirm-email.module';
+import { JwtAuthStrategy } from './auth/jwt-auth.strategy';
 
 @Module({
   imports: [
@@ -17,13 +22,17 @@ import { GoogleStrategy } from './auth/google.strategy';
       synchronize: true,
       autoLoadEntities: true,
     }),
-    TasksModule,
-    AuthModule,
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: 10,
     }),
+
+    TasksModule,
+    AuthModule,
+    EmailModule,
+    ConfirmEmailModule,
   ],
-  providers: [GoogleStrategy],
+  providers: [GoogleStrategy, ConfirmEmailService, JwtAuthStrategy],
+  controllers: [ConfirmEmailController],
 })
 export class AppModule {}

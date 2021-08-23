@@ -9,6 +9,8 @@ import {
   Query,
   ValidationPipe,
   ParseIntPipe,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -22,20 +24,23 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import * as csurf from 'csurf';
+
 import { Task } from './entities/task.entity';
 import { TaskStatus } from './task-status.enum';
-
-var csrfProtection = csurf({ cookie: true });
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @ApiTags('tasks')
 @ApiBearerAuth()
 @Controller('tasks')
+@UseGuards(JwtAuthGuard)
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getAllTasks(@Query(ValidationPipe) filterDTO: getTasksFilterDTO) {
+  getAllTasks(
+    @Query(ValidationPipe) filterDTO: getTasksFilterDTO,
+    @Request() request,
+  ) {
     return this.tasksService.getAllTasks(filterDTO);
   }
 
@@ -64,12 +69,4 @@ export class TasksController {
   ): Promise<Task> {
     return this.tasksService.updateTaskStatus(id, status);
   }
-
-  // @Patch('/status/:id')
-  // updateTaskStatus(
-  //   @Param('id') id: string,
-  //   @Body('status', TaskStatusValidationPipe) status: TaskStatus,
-  // ): Task[] {
-  //   return this.tasksService.updateTaskStatus(id, status);
-  // }
 }
