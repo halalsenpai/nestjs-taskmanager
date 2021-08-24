@@ -18,7 +18,7 @@ export class AuthService {
     return this.UserRepository.signUp(authCredentialsDto);
   }
 
-  async login(authCredentialsDto: AuthCredentialsDto): Promise<string> {
+  async login(authCredentialsDto: AuthCredentialsDto) {
     const email = await this.UserRepository.validateUserPassword(
       authCredentialsDto,
     );
@@ -38,7 +38,6 @@ export class AuthService {
     if (!req.user) {
       return 'No user from google';
     }
-    console.log(req.user.email);
 
     const found = await this.UserRepository.findOne({ email: req.user.email });
 
@@ -55,5 +54,4 @@ export class AuthService {
   async createWithGoogle(email: string, madeWithGoogle: boolean) {
     return await this.UserRepository.signUpWithGoogle(email, madeWithGoogle);
   }
-  
 }

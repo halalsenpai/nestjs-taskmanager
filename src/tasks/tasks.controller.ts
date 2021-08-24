@@ -28,6 +28,8 @@ import {
 import { Task } from './entities/task.entity';
 import { TaskStatus } from './task-status.enum';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { User } from 'src/auth/user.entity';
 
 @ApiTags('tasks')
 @ApiBearerAuth()
@@ -48,8 +50,12 @@ export class TasksController {
   @UsePipes(ValidationPipe)
   @ApiOperation({ summary: 'Create a task' })
   @ApiBody({ type: CreateTaskDto })
-  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksService.createTask(createTaskDto);
+  createTask(
+    @Body() createTaskDto: CreateTaskDto,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    console.log('User===>', user);
+    return this.tasksService.createTask(createTaskDto, user);
   }
 
   @Get('/:id')

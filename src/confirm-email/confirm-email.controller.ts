@@ -7,7 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-@Controller('confirmEmail')
+@Controller('confirm-email')
 @UseInterceptors(ClassSerializerInterceptor)
 export class ConfirmEmailController {
   constructor(private readonly emailConfirmationService: ConfirmEmailService) {}

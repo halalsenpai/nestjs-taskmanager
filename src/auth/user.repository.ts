@@ -63,4 +63,8 @@ export class UserRepository extends Repository<User> {
   async markEmailAsConfirmed(email: string) {
     return this.update({ email }, { isVerified: true });
   }
+
+  async getUser(email: string) {
+    return this.findOne({ email });
+  }
 }

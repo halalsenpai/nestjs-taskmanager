@@ -14,7 +14,6 @@ export class ConfirmEmailService {
   ) {}
 
   public async confirmEmail(email: string) {
-    console.log('email in confirm email service', email);
     const user = await this.UserRepository.findOne({ where: { email: email } });
 
     if (user.isVerified) {

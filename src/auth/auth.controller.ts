@@ -21,8 +21,8 @@ import { BadRequestException } from '@nestjs/common';
 export class AuthController {
   constructor(
     @InjectRepository(UserRepository)
-    private authService: AuthService,
     private userRepository: UserRepository,
+    private authService: AuthService,
     private readonly emailConfirmationService: EmailConfirmationService,
   ) {}
 
@@ -52,7 +52,6 @@ export class AuthController {
   }
   @Post('/forgotpassword')
   async resetPassword(@Body(ValidationPipe) body): Promise<any> {
-    console.log(body.email);
     const user = await this.userRepository.findOne({ email: body.email });
     if (user) {
       await this.emailConfirmationService.passwordReset(body.email);
