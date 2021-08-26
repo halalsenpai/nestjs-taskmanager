@@ -10,6 +10,7 @@ import { ConfirmEmailController } from './confirm-email/confirm-email.controller
 import { ConfirmEmailModule } from './confirm-email/confirm-email.module';
 import { JwtAuthStrategy } from './auth/jwt-auth.strategy';
 import { AuthService } from './auth/auth.service';
+import { EmailConfirmationService } from './email/email-confirmation.service';
 
 @Module({
   imports: [
@@ -33,7 +34,13 @@ import { AuthService } from './auth/auth.service';
     EmailModule,
     ConfirmEmailModule,
   ],
-  providers: [GoogleStrategy, ConfirmEmailService, JwtAuthStrategy, AuthService],
+  providers: [
+    GoogleStrategy,
+    ConfirmEmailService,
+    JwtAuthStrategy,
+    AuthService,
+    EmailConfirmationService,
+  ],
   controllers: [ConfirmEmailController],
 })
 export class AppModule {}

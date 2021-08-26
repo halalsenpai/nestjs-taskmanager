@@ -8,6 +8,7 @@ import {
   Req,
   Res,
   Redirect,
+  Request,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
@@ -50,14 +51,9 @@ export class AuthController {
   googleAuthRedirect(@Req() req) {
     return this.authService.googleLogin(req);
   }
-  @Post('/forgotpassword')
+  @Post('/forgot-password')
   async resetPassword(@Body(ValidationPipe) body): Promise<any> {
-    const user = await this.userRepository.findOne({ email: body.email });
-    if (user) {
-      await this.emailConfirmationService.passwordReset(body.email);
-    } else {
-      throw new BadRequestException('user doesnt exist');
-    }
+    return this.authService.forgotPassword(body);
   }
   @Post('/reset-password')
   async newPassword(@Body(ValidationPipe) body): Promise<any> {
@@ -68,5 +64,15 @@ export class AuthController {
     } else {
       throw new BadRequestException('user doesnt exist');
     }
+  }
+
+  @Post('/sign-up-magic-link')
+  async signUpWithMagicLink(@Body(ValidationPipe) body): Promise<any> {
+    return this.authService.signUpWithMagicLink(body.email);
+  }
+  @Get('/verify-token')
+  async loginMagicLink(@Request() req) {
+    console.log('Request===> ', req.query.token);
+    return this.authService.verifyMagicLinkToken(req.query.token);
   }
 }

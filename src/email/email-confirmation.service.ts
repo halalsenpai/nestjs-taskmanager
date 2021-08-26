@@ -26,6 +26,23 @@ export class EmailConfirmationService {
       text,
     });
   }
+  public sendMagicLink(email: string) {
+    const payload = { email };
+    const token = this.jwtService.sign(payload, {
+      secret: 'magic-link',
+      expiresIn: `10s`,
+    });
+
+    const url = `${process.env.MAGIC_LINK_URL}?token=${token}`;
+
+    const text = `Welcome to the application. To log in, click here: ${url}`;
+
+    return this.emailService.sendMail({
+      to: email,
+      subject: 'Magic Link To login',
+      text,
+    });
+  }
   public passwordReset(email: string) {
     const payload = { email };
     const token = this.jwtService.sign(payload, {
@@ -39,7 +56,7 @@ export class EmailConfirmationService {
 
     return this.emailService.sendMail({
       to: email,
-      subject: 'Email confirmation',
+      subject: 'Password Reset',
       text,
     });
   }

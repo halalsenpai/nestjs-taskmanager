@@ -1,10 +1,17 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Injectable,
+  UnauthorizedException,
+  ValidationPipe,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthCredentialsDto } from './dto/auth-credentials.dto';
 import { JwtPayload } from './jwt-payload.interface';
 
 import { UserRepository } from './user.repository';
+import { EmailConfirmationService } from '../email/email-confirmation.service';
 
 @Injectable()
 export class AuthService {
@@ -12,6 +19,7 @@ export class AuthService {
     @InjectRepository(UserRepository)
     private UserRepository: UserRepository,
     private jwtService: JwtService,
+    private emailConfirmationService: EmailConfirmationService,
   ) {}
 
   async signUp(authCredentialsDto: AuthCredentialsDto) {
@@ -53,5 +61,31 @@ export class AuthService {
 
   async createWithGoogle(email: string, madeWithGoogle: boolean) {
     return await this.UserRepository.signUpWithGoogle(email, madeWithGoogle);
+  }
+  async forgotPassword(@Body(ValidationPipe) body) {
+    const user = await this.UserRepository.findOne({ email: body.email });
+    if (user) {
+      await this.emailConfirmationService.passwordReset(body.email);
+    } else {
+      throw new BadRequestException('user doesnt exist');
+    }
+  }
+  async signUpWithMagicLink(email: string) {
+    const user = await this.UserRepository.findOne({ email: email });
+    if (user) {
+      return this.emailConfirmationService.sendMagicLink(email);
+    } else {
+      await this.UserRepository.createUserWithMagicLink(email);
+      return this.emailConfirmationService.sendMagicLink(email);
+    }
+  }
+
+  async verifyMagicLinkToken(token: string) {
+    try {
+      const tok = await this.jwtService.verify(token, { secret: 'magic-link' });
+      console.log('token from magic link', tok.email);
+    } catch (error) {
+      return error;
+    }
   }
 }

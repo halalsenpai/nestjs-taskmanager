@@ -60,6 +60,20 @@ export class UserRepository extends Repository<User> {
       return error;
     }
   }
+
+  async createUserWithMagicLink(email: string) {
+    const user = new User();
+    user.email = email;
+    user.madeWithGoogle = null;
+    user.password = null;
+    user.salt = null;
+    try {
+      await user.save();
+    } catch (error) {
+      return error;
+    }
+  }
+
   async markEmailAsConfirmed(email: string) {
     return this.update({ email }, { isVerified: true });
   }

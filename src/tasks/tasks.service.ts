@@ -29,8 +29,10 @@ export class TasksService {
   }
 
   async createTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
-    const getUser = await this.userRepository.getUser(user.email);
-    console.log(await getUser.sanitize());
+    const getUser = await (
+      await this.userRepository.getUser(user.email)
+    ).sanitize();
+
     return this.taskRepository.createTask(createTaskDto, getUser);
   }
 
